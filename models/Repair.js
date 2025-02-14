@@ -16,8 +16,9 @@ const repairSchema = new Schema({
     model: { type: String },
     serialNum: { type: String },
     modelImage: { type: String },
-    description: { type: String, },
+    description: { type: String },
   },
+  workOrderNumber: { type: String, unique: true },
   date: {
     type: Date,
     default: Date.now,

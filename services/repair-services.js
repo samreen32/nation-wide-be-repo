@@ -1,5 +1,50 @@
 const Repair = require("../models/Repair");
 const User = require("../models/User");
+const nodemailer = require("nodemailer");
+const ejs = require("ejs");
+const path = require("path");
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: "iamsamreenk@gmail.com",
+        pass: "vckvanhgrxctewnu",
+    },
+});
+
+async function generateWorkOrderNumber(state) {
+    const now = new Date();
+    const year = now.getFullYear().toString().slice(-2);
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const datePart = `${year}${month}${day}`;
+    const lastWorkOrder = await Repair.findOne({
+        workOrderNumber: { $regex: `^${state}-${datePart}-` },
+    }).sort({ workOrderNumber: -1 });
+    let seq = "01";
+    if (lastWorkOrder) {
+        const lastSeq = lastWorkOrder.workOrderNumber.split("-")[2];
+        seq = String(parseInt(lastSeq, 10) + 1).padStart(2, "0");
+    }
+    return `${state}-${datePart}-${seq}`;
+}
+
+async function sendInvoiceEmail(user, repair, workOrderNumber, currentDate) {
+    const templatePath = path.join(__dirname, "../templates/invoice.ejs");
+    const template = await ejs.renderFile(templatePath, {
+        user,
+        repair,
+        workOrderNumber,
+        currentDate,
+    });
+    const mailOptions = {
+        from: "iamsamreenk@gmail.com",
+        to: user.email,
+        subject: "Nationwide Laptop Repair - Your Workorder",
+        html: template,
+    };
+    await transporter.sendMail(mailOptions);
+}
 
 async function registerForm(req, res) {
     try {
@@ -22,11 +67,19 @@ async function registerForm(req, res) {
             });
             await newUser.save();
         }
+        const workOrderNumber = await generateWorkOrderNumber(user_list.state);
+        const currentDate = new Date().toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
         const newRepair = new Repair({
             user_list,
             form_list,
+            workOrderNumber,
         });
         await newRepair.save();
+        await sendInvoiceEmail(user_list, form_list, workOrderNumber, currentDate);
         res.status(201).json({
             status: 201,
             message: "Repair form submitted successfully",
