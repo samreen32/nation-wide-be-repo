@@ -23,6 +23,11 @@ const repairSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  status: {
+    type: String,
+    enum: ["pending", "received", "ship", "completed"],
+    default: "pending",
+  },
 });
 
 const Repair = mongoose.model("repairForm", repairSchema);

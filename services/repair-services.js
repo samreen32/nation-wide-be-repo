@@ -111,7 +111,35 @@ async function getAllRepairReports(req, res) {
     }
 }
 
+async function updateRepairForm(req, res) {
+    try {
+        const { id } = req.params;
+        const updates = req.body;
+        const updatedRepair = await Repair.findByIdAndUpdate(id, updates, {
+            new: true,
+        });
+        if (!updatedRepair) {
+            return res.status(404).json({
+                status: 404,
+                message: "Repair form not found",
+            });
+        }
+        res.status(200).json({
+            status: 200,
+            message: "Repair form updated successfully",
+            data: updatedRepair,
+        });
+    } catch (error) {
+        console.error("Error updating repair form:", error);
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error",
+        });
+    }
+}
+
 module.exports = {
     registerForm,
-    getAllRepairReports
+    getAllRepairReports,
+    updateRepairForm
 };

@@ -2,6 +2,7 @@ const express = require("express");
 const {
     registerForm,
     getAllRepairReports,
+    updateRepairForm,
 } = require("../services/repair-services");
 const validateRequest = require("../middleware/validateRequest");
 const { insertUserInfoValidationRules } = require("../validator/bodyValidator");
@@ -16,6 +17,11 @@ router.post(
 );
 
 router.get("/repair-reports", getAllRepairReports);
+
+router.patch("/update-repair/:id",
+    validateRequest,
+    updateRepairForm
+);
 
 router.use((req, res) => {
     res.status(404).json({
