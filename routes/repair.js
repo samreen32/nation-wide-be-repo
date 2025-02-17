@@ -3,6 +3,8 @@ const {
     registerForm,
     getAllRepairReports,
     updateRepairForm,
+    deleteRepairForm,
+    getRepairFormByWorkOrderNumber,
 } = require("../services/repair-services");
 const validateRequest = require("../middleware/validateRequest");
 const { insertUserInfoValidationRules } = require("../validator/bodyValidator");
@@ -22,6 +24,9 @@ router.patch("/update-repair/:id",
     validateRequest,
     updateRepairForm
 );
+
+router.delete("/delete-repair/:id", deleteRepairForm);
+router.get("/workorder/:workOrderNumber", getRepairFormByWorkOrderNumber);
 
 router.use((req, res) => {
     res.status(404).json({

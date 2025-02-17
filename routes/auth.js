@@ -1,9 +1,11 @@
 const express = require("express");
-const { getAllUsers } = require("../services/auth-services");
+const { getAllUsers, deleteCustomer } = require("../services/auth-services");
 const router = express.Router();
 
 // register user
 router.get("/usersList", getAllUsers);
+
+router.delete("/delete-customer/:id", deleteCustomer);
 
 router.use((req, res) => {
   res.status(404).json({

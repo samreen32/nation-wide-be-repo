@@ -17,6 +17,31 @@ async function getAllUsers(req, res) {
     }
 }
 
+async function deleteCustomer(req, res) {
+    try {
+        const { id } = req.params;
+        const deletedUser = await User.findByIdAndDelete(id);
+        if (!deletedUser) {
+            return res.status(404).json({
+                status: 404,
+                message: "User not found",
+            });
+        }
+        res.status(200).json({
+            status: 200,
+            message: "User deleted successfully",
+            data: deletedUser,
+        });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error",
+        });
+    }
+}
+
 module.exports = {
-    getAllUsers
+    getAllUsers,
+    deleteCustomer,
 };

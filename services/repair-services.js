@@ -96,11 +96,18 @@ async function registerForm(req, res) {
 
 async function getAllRepairReports(req, res) {
     try {
-        const repairReports = await Repair.find();
+        const repairReports = await Repair.find({}, '_id workOrderNumber user_list form_list status date');
         res.status(200).json({
             status: 200,
             message: "Repair reports fetched successfully",
-            data: repairReports,
+            data: repairReports.map(report => ({
+                id: report._id,
+                workOrderNumber: report.workOrderNumber,
+                user: report.user_list,
+                repairDetails: report.form_list,
+                status: report.status,
+                date: report.date
+            })),
         });
     } catch (error) {
         console.error("Error fetching repair reports:", error);
@@ -111,6 +118,24 @@ async function getAllRepairReports(req, res) {
     }
 }
 
+async function sendUpdateInvoiceEmail(user, repair, workOrderNumber, currentDate, status) {
+    const templatePath = path.join(__dirname, "../templates/update_invoice.ejs");
+    const template = await ejs.renderFile(templatePath, {
+        user, // Pass the user object
+        repair, // Pass the repair object
+        workOrderNumber, // Pass the work order number
+        currentDate, // Pass the current date
+        status, // Pass the status
+    });
+    const mailOptions = {
+        from: "iamsamreenk@gmail.com",
+        to: user.email, // Ensure user.email is correct
+        subject: "Nationwide Laptop Repair - Your Workorder",
+        html: template,
+    };
+    await transporter.sendMail(mailOptions);
+}
+
 async function updateRepairForm(req, res) {
     try {
         const { id } = req.params;
@@ -118,7 +143,41 @@ async function updateRepairForm(req, res) {
         const updatedRepair = await Repair.findByIdAndUpdate(id, updates, {
             new: true,
         });
+
         if (!updatedRepair) {
+            return res.status(404).json({
+                status: 404,
+                message: "Repair form not found",
+            });
+        }
+
+        // Send response first
+        res.status(200).json({
+            status: 200,
+            message: "Repair form updated successfully",
+            data: updatedRepair,
+        });
+
+        // Extract user_list, form_list, workOrderNumber, and status
+        const { user_list, form_list, workOrderNumber, status } = updatedRepair;
+        const currentDate = new Date().toLocaleDateString();
+
+        // Send email with updated status
+        await sendUpdateInvoiceEmail(user_list, form_list, workOrderNumber, currentDate, status);
+    } catch (error) {
+        console.error("Error updating repair form:", error);
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error",
+        });
+    }
+}
+
+async function deleteRepairForm(req, res) {
+    try {
+        const { id } = req.params;
+        const deletedRepair = await Repair.findByIdAndDelete(id);
+        if (!deletedRepair) {
             return res.status(404).json({
                 status: 404,
                 message: "Repair form not found",
@@ -126,11 +185,42 @@ async function updateRepairForm(req, res) {
         }
         res.status(200).json({
             status: 200,
-            message: "Repair form updated successfully",
-            data: updatedRepair,
+            message: "Repair form deleted successfully",
+            data: deletedRepair,
         });
     } catch (error) {
-        console.error("Error updating repair form:", error);
+        console.error("Error deleting repair form:", error);
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error",
+        });
+    }
+}
+
+async function getRepairFormByWorkOrderNumber(req, res) {
+    try {
+        const { workOrderNumber } = req.params;
+        const repairForm = await Repair.findOne({ workOrderNumber });
+        if (!repairForm) {
+            return res.status(404).json({
+                status: 404,
+                message: "Repair form not found",
+            });
+        }
+        res.status(200).json({
+            status: 200,
+            message: "Repair form fetched successfully",
+            data: {
+                id: repairForm._id,
+                workOrderNumber: repairForm.workOrderNumber,
+                user: repairForm.user_list,
+                repairDetails: repairForm.form_list,
+                status: repairForm.status,
+                date: repairForm.date,
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching repair form:", error);
         res.status(500).json({
             status: 500,
             message: "Internal server error",
@@ -141,5 +231,7 @@ async function updateRepairForm(req, res) {
 module.exports = {
     registerForm,
     getAllRepairReports,
-    updateRepairForm
+    updateRepairForm,
+    deleteRepairForm,
+    getRepairFormByWorkOrderNumber
 };
