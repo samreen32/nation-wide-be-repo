@@ -143,26 +143,19 @@ async function updateRepairForm(req, res) {
         const updatedRepair = await Repair.findByIdAndUpdate(id, updates, {
             new: true,
         });
-
         if (!updatedRepair) {
             return res.status(404).json({
                 status: 404,
                 message: "Repair form not found",
             });
         }
-
-        // Send response first
         res.status(200).json({
             status: 200,
             message: "Repair form updated successfully",
             data: updatedRepair,
         });
-
-        // Extract user_list, form_list, workOrderNumber, and status
         const { user_list, form_list, workOrderNumber, status } = updatedRepair;
         const currentDate = new Date().toLocaleDateString();
-
-        // Send email with updated status
         await sendUpdateInvoiceEmail(user_list, form_list, workOrderNumber, currentDate, status);
     } catch (error) {
         console.error("Error updating repair form:", error);
