@@ -112,9 +112,57 @@ async function deleteCustomer(req, res) {
     }
 }
 
+async function getCounts(req, res) {
+    try {
+        const totalUsers = await User.countDocuments();
+        const totalForms = await Repair.countDocuments();
+        const completedForms = await Repair.countDocuments({ status: "completed" });
+        const pendingForms = await Repair.countDocuments({ status: "pending" });
+        const shipForms = await Repair.countDocuments({ status: "ship" });
+        const recievedForms = await Repair.countDocuments({ status: "received" });
+
+        const currentYear = new Date().getFullYear();
+        const monthlyUserCounts = [];
+        const monthlyFormCounts = [];
+
+        for (let month = 0; month < 12; month++) {
+            const startOfMonth = new Date(currentYear, month, 1);
+            const endOfMonth = new Date(currentYear, month + 1, 1);
+
+            const usersThisMonth = await User.countDocuments({ date: { $gte: startOfMonth, $lt: endOfMonth } });
+            const formsThisMonth = await Repair.countDocuments({ createdAt: { $gte: startOfMonth, $lt: endOfMonth } });
+
+            monthlyUserCounts.push({ month: month + 1, count: usersThisMonth });
+            monthlyFormCounts.push({ month: month + 1, count: formsThisMonth });
+        }
+
+        res.status(200).json({
+            status: 200,
+            message: "Counts fetched successfully",
+            data: {
+                totalUsers,
+                totalForms,
+                completedForms,
+                pendingForms,
+                shipForms,
+                recievedForms,
+                monthlyUserCounts,
+                monthlyFormCounts,
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching counts:", error);
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error",
+        });
+    }
+}
+
 module.exports = {
     getAllUsers,
     getUserDetails,
     editCustomer,
     deleteCustomer,
+    getCounts
 };

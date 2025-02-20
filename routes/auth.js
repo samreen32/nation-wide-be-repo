@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllUsers, deleteCustomer, getUserDetails, editCustomer
+const { getAllUsers, deleteCustomer, getUserDetails, editCustomer, getCounts
 
 } = require("../services/auth-services");
 const validateRequest = require("../middleware/validateRequest");
@@ -16,6 +16,8 @@ router.patch("/edit-user/:id",
 );
 
 router.delete("/delete-customer/:id", deleteCustomer);
+
+router.get("/get-count", getCounts);
 
 router.use((req, res) => {
   res.status(404).json({
