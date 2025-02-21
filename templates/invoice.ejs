@@ -15,8 +15,18 @@
         border: 1px solid #ccc;
       }
       .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+      }
+      .header img {
+        max-width: 120px;
+      }
+      .header h1 {
+        flex-grow: 1;
         text-align: center;
-        margin-bottom: 20px;
+        margin-left: 155px;
       }
       .details {
         margin-bottom: 20px;
@@ -42,13 +52,17 @@
   <body>
     <div class="invoice">
       <div class="header">
-        <h1>Repair Workorder #<%= workOrderNumber %></h1>
-        <p>Date: <%= currentDate %></p>
-        <p>
-          Thank you for submitting your repair request! We will get back to you
-          soon.
-        </p>
+        <img
+          src="https://res.cloudinary.com/drgrcajhq/image/upload/v1740120446/usdigitalmarketing-folder/dngqzyfhadykfxnrjiun.png"
+          alt="logo image"
+        />
+        <h1>Repair Workorder # <br /><%= workOrderNumber %></h1>
       </div>
+      <p style="text-align: center">Date: <%= currentDate %></p>
+      <p style="text-align: center">
+        Thank you for submitting your repair request! We will get back to you
+        soon.
+      </p>
       <div class="details">
         <h2>Customer Details</h2>
         <table>
