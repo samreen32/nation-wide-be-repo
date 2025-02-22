@@ -2,12 +2,23 @@ const User = require("../models/User");
 const Repair = require("../models/Repair");
 
 async function getAllUsers(req, res) {
+    const { page = 1, limit = 10 } = req.query; 
     try {
-        const users = await User.find();
+        const users = await User.find()
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit));
+
+        const totalUsers = await User.countDocuments();
         res.status(200).json({
             status: 200,
             message: "Users fetched successfully",
             data: users,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPages: Math.ceil(totalUsers / limit),
+                totalRecords: totalUsers,
+                recordsPerPage: parseInt(limit),
+            },
         });
     } catch (error) {
         console.error("Error fetching users:", error);

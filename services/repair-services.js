@@ -96,7 +96,16 @@ async function registerForm(req, res) {
 
 async function getAllRepairReports(req, res) {
     try {
-        const repairReports = await Repair.find({}, '_id workOrderNumber user_list form_list status date');
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const repairReports = await Repair.find({}, '_id workOrderNumber user_list form_list status date')
+            .skip(skip)
+            .limit(limit);
+
+        const totalRepairReports = await Repair.countDocuments();
+
         res.status(200).json({
             status: 200,
             message: "Repair reports fetched successfully",
@@ -108,6 +117,12 @@ async function getAllRepairReports(req, res) {
                 status: report.status,
                 date: report.date
             })),
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(totalRepairReports / limit),
+                totalRecords: totalRepairReports,
+                recordsPerPage: limit,
+            },
         });
     } catch (error) {
         console.error("Error fetching repair reports:", error);
