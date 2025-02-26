@@ -101,6 +101,7 @@ async function getAllRepairReports(req, res) {
         const skip = (page - 1) * limit;
 
         const repairReports = await Repair.find({}, '_id workOrderNumber user_list form_list status date')
+            .sort({ date: -1 }) 
             .skip(skip)
             .limit(limit);
 

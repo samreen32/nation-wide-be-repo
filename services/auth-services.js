@@ -39,14 +39,18 @@ async function getUserDetails(req, res) {
                 message: "User not found",
             });
         }
-        const repairs = await Repair.find({ "user_list.email": user.nation_users.email });
+        const repairs = await Repair.find({ "user_list.email": user.nation_users.email })
+            .sort({ date: -1 }); 
         const repairForms = repairs.map(repair => ({
             model: repair.form_list.model,
             serialNum: repair.form_list.serialNum,
+            modalImage: repair.form_list.modelImage,
             description: repair.form_list.description,
             workOrderNumber: repair.workOrderNumber,
             status: repair.status,
+            date: repair.date,
         }));
+
         res.status(200).json({
             status: 200,
             message: "User details fetched successfully",
