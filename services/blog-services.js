@@ -4,13 +4,6 @@ const Blog = require("../models/Blogs");
 async function createBlog(req, res) {
   try {
     const { blogTitle, blogDesc, blogImage, blogTag } = req.body;
-    if (!blogTitle || !blogDesc || !blogImage || !blogTag) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "All fields (blogTitle, blogDesc, blogImage, blogTag) are required.",
-      });
-    }
     const newBlog = new Blog({
       nation_blogs: {
         blogTitle,
