@@ -39,7 +39,7 @@ async function createBlog(req, res) {
 async function getAllBlogs(req, res) {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 9;
+    const limit = 6;
     const skip = (page - 1) * limit;
     const blogs = await Blog.find().sort({ date: -1 }).skip(skip).limit(limit);
     const totalBlogs = await Blog.countDocuments();
