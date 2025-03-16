@@ -14,6 +14,7 @@ app.use(express.json());
 //Available Routes
 app.use("/api/repair", require("./routes/repair"));
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/blog", require("./routes/blog"));
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);
