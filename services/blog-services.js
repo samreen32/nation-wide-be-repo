@@ -3,14 +3,40 @@ const Blog = require("../models/Blogs");
 // Create a new blog
 async function createBlog(req, res) {
   try {
-    const { blogTitle, blogDesc, blogImage, blogTag } = req.body;
+    const { 
+      blogTitle, 
+      blogDesc, 
+      blogImage, 
+      blogTag,
+      metaTitle,
+      metaDescription,
+      canonicalUrl,
+      keywords,
+      ogTitle,
+      ogDescription,
+      ogImage,
+      twitterTitle,
+      twitterDescription,
+      twitterImage
+    } = req.body;
+
     const newBlog = new Blog({
       nation_blogs: {
         blogTitle,
         blogDesc,
         blogImage,
         blogTag,
-      },
+        metaTitle: metaTitle,
+        metaDescription: metaDescription ,
+        canonicalUrl: canonicalUrl || '', 
+        keywords: keywords,
+        ogTitle: ogTitle || blogTitle,
+        ogDescription: ogDescription || blogDesc?.substring(0, 160),
+        ogImage: ogImage || blogImage,
+        twitterTitle: twitterTitle || blogTitle,
+        twitterDescription: twitterDescription || blogDesc?.substring(0, 160),
+        twitterImage: twitterImage || blogImage
+      }
     });
     const savedBlog = await newBlog.save();
     res.status(201).json({
