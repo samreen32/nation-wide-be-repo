@@ -13,7 +13,7 @@ app.use(cors({
 }));
 
 // Or allow multiple origins
-const allowedOrigins = ['http://localhost:3000', 'https://your-koyeb-app.koyeb.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://far-caterina-devtribe-16bbb1ed.koyeb.app'];
 app.use(cors({
   origin: function(origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
