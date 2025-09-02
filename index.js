@@ -7,7 +7,23 @@ connectToMongo();
 
 const app = express();
 const port = process.env.PORT || 5001;
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
+
+// Or allow multiple origins
+const allowedOrigins = ['http://localhost:3000', 'https://your-koyeb-app.koyeb.app'];
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 app.use(express.json());
 

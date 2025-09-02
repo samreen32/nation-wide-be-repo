@@ -6,9 +6,12 @@ const path = require("path");
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
+    secure: true,
+    logger: true,
+    debug: true,
     auth: {
         user: "iamsamreenk@gmail.com",
-        pass: "vckvanhgrxctewnu",
+        pass: "",
     },
 });
 
