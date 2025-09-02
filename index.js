@@ -7,27 +7,28 @@ connectToMongo();
 
 const app = express();
 const port = process.env.PORT || 5001;
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
 
-// Or allow multiple origins
+// Use only ONE CORS configuration
 const allowedOrigins = ['http://localhost:3000', 'https://far-caterina-devtribe-16bbb1ed.koyeb.app'];
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
     }
+    return callback(null, true);
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 app.use(express.json());
 
-//Available Routes
+// Available Routes
 app.use("/api/repair", require("./routes/repair"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/blog", require("./routes/blog"));
