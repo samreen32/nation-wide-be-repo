@@ -3,10 +3,10 @@ const Blog = require("../models/Blogs");
 // Create a new blog
 async function createBlog(req, res) {
   try {
-    const { 
-      blogTitle, 
-      blogDesc, 
-      blogImage, 
+    const {
+      blogTitle,
+      blogDesc,
+      blogImage,
       blogTag,
       metaTitle,
       metaDescription,
@@ -17,7 +17,7 @@ async function createBlog(req, res) {
       ogImage,
       twitterTitle,
       twitterDescription,
-      twitterImage
+      twitterImage,
     } = req.body;
 
     const newBlog = new Blog({
@@ -27,16 +27,16 @@ async function createBlog(req, res) {
         blogImage,
         blogTag,
         metaTitle: metaTitle,
-        metaDescription: metaDescription ,
-        canonicalUrl: canonicalUrl || '', 
+        metaDescription: metaDescription,
+        canonicalUrl: canonicalUrl || "",
         keywords: keywords,
         ogTitle: ogTitle || blogTitle,
         ogDescription: ogDescription || blogDesc?.substring(0, 160),
         ogImage: ogImage || blogImage,
         twitterTitle: twitterTitle || blogTitle,
         twitterDescription: twitterDescription || blogDesc?.substring(0, 160),
-        twitterImage: twitterImage || blogImage
-      }
+        twitterImage: twitterImage || blogImage,
+      },
     });
     const savedBlog = await newBlog.save();
     res.status(201).json({
@@ -56,33 +56,33 @@ async function createBlog(req, res) {
 
 // Get all blogs
 async function getAllBlogs(req, res) {
-    try {
-      const page = parseInt(req.query.page) || 1; 
-      const limit = parseInt(req.query.limit) || 6;
-      const skip = (page - 1) * limit; 
-      const blogs = await Blog.find().sort({ date: -1 }).skip(skip).limit(limit);
-      const totalBlogs = await Blog.countDocuments();
-      const totalPages = Math.ceil(totalBlogs / limit);
-      res.status(200).json({
-        success: true,
-        message: "Blogs fetched successfully!",
-        data: blogs,
-        pagination: {
-          currentPage: page,
-          totalPages: totalPages,
-          totalBlogs: totalBlogs,
-          blogsPerPage: limit,
-        },
-      });
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      res.status(500).json({
-        success: false,
-        message: "Internal server error",
-        error: error.message,
-      });
-    }
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    const skip = (page - 1) * limit;
+    const blogs = await Blog.find().sort({ date: -1 }).skip(skip).limit(limit);
+    const totalBlogs = await Blog.countDocuments();
+    const totalPages = Math.ceil(totalBlogs / limit);
+    res.status(200).json({
+      success: true,
+      message: "Blogs fetched successfully!",
+      data: blogs,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalBlogs: totalBlogs,
+        blogsPerPage: limit,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
+}
 
 // Get a specific blog by ID
 async function getBlogById(req, res) {

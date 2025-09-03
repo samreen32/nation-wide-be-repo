@@ -1,6 +1,10 @@
 const express = require("express");
-const { getAllUsers, deleteCustomer, getUserDetails, editCustomer, getCounts
-
+const {
+  getAllUsers,
+  deleteCustomer,
+  getUserDetails,
+  editCustomer,
+  getCounts,
 } = require("../services/auth-services");
 const validateRequest = require("../middleware/validateRequest");
 const router = express.Router();
@@ -10,10 +14,7 @@ router.get("/usersList", getAllUsers);
 
 router.get("/userDetails/:id", getUserDetails);
 
-router.patch("/edit-user/:id",
-  validateRequest,
-  editCustomer
-);
+router.patch("/edit-user/:id", validateRequest, editCustomer);
 
 router.delete("/delete-customer/:id", deleteCustomer);
 
