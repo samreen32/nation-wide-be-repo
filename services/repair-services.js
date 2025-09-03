@@ -3,15 +3,15 @@ const User = require("../models/User");
 const nodemailer = require("nodemailer");
 const ejs = require("ejs");
 const path = require("path");
+require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtpout.secureserver.net",
+  port: 465,
   secure: true,
-  logger: true,
-  debug: true,
   auth: {
-    user: "iamsamreenk@gmail.com",
-    pass: "",
+    user: "support@nationwidelaptoprepair.com",
+    pass: "SupportAt2802$$##%%twomonkies",
   },
 });
 
@@ -41,7 +41,7 @@ async function sendInvoiceEmail(user, repair, workOrderNumber, currentDate) {
     currentDate,
   });
   const mailOptions = {
-    from: "iamsamreenk@gmail.com",
+    from: "support@nationwidelaptoprepair.com",
     to: user.email,
     subject: "Nationwide Laptop Repair - Your Workorder",
     html: template,
@@ -156,8 +156,8 @@ async function sendUpdateInvoiceEmail(
     status, // Pass the status
   });
   const mailOptions = {
-    from: "iamsamreenk@gmail.com",
-    to: user.email, // Ensure user.email is correct
+    from: "support@nationwidelaptoprepair.com",
+    to: user.email,
     subject: "Nationwide Laptop Repair - Your Workorder",
     html: template,
   };
