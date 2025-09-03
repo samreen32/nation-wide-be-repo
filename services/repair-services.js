@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: { 
     user: "support@nationwidelaptoprepair.com",
-    pass: "SupportAt2802$$##%%twomonkies",
+    pass: "SupportAt2802$$##%%twomonkies", 
   },
 });
 
