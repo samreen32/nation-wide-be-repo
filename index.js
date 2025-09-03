@@ -8,18 +8,49 @@ connectToMongo();
 const app = express();
 const port = process.env.PORT || 5001;
 
-// Allow all origins - simple approach
-app.use(cors());
+// Handle preflight requests first
+app.options("*", cors());
 
-// OR if you want more control while allowing all origins:
+// CORS configuration
 app.use(
   cors({
     origin: "*", // Allow all origins
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: [
+      "Content-Type", 
+      "Authorization", 
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers",
+      "X-CSRF-Token",
+      "X-API-Key"
+    ],
+    exposedHeaders: [
+      "Content-Range",
+      "X-Content-Range",
+      "Content-Disposition",
+      "Authorization"
+    ],
+    maxAge: 86400, // 24 hours
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   })
 );
+
+// Handle preflight requests explicitly
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers, X-CSRF-Token, X-API-Key");
+    res.header("Access-Control-Max-Age", "86400");
+    return res.status(204).send();
+  }
+  next();
+});
 
 app.use(express.json());
 
