@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
   host: "smtpout.secureserver.net",
   port: 465,
   secure: true,
-  auth: {
+  auth: { 
     user: "support@nationwidelaptoprepair.com",
     pass: "SupportAt2802$$##%%twomonkies",
   },
